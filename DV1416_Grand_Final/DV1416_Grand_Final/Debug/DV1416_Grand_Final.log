@@ -1,22 +1,21 @@
-﻿Build started 2011-09-19 12:47:53.
-     1>Project "F:\Dropbox\My Dropbox\Skolan\År 2\LP3\DV1416 3Dprogrammering 2\Project\DV1416_Grand_Final\DV1416_Grand_Final\DV1416_Grand_Final.vcxproj" on node 2 (build target(s)).
-     1>PrepareForBuild:
-         Creating directory "F:\Dropbox\My Dropbox\Skolan\År 2\LP3\DV1416 3Dprogrammering 2\Project\DV1416_Grand_Final\Debug\".
-       InitializeBuildStatus:
+﻿Build started 2011-11-06 12:17:58.
+     1>Project "D:\Dropbox\Skolan\Year 2\LP3\DV1416 3Dprogrammering 2\Project\DV1416_Grand_Final\DV1416_Grand_Final\DV1416_Grand_Final.vcxproj" on node 2 (build target(s)).
+     1>InitializeBuildStatus:
          Creating "Debug\DV1416_Grand_Final.unsuccessfulbuild" because "AlwaysCreate" was specified.
        ClCompile:
-         C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\CL.exe /c /ZI /nologo /W3 /WX- /Od /Oy- /D _MBCS /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc100.pdb" /Gd /TP /analyze- /errorReport:prompt main.cpp
+         C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\CL.exe /c /Zi /nologo /W3 /WX- /Od /Oy- /D _MBCS /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc100.pdb" /Gd /TP /analyze- /errorReport:prompt Source\main.cpp
          main.cpp
        Link:
-         C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"F:\Dropbox\My Dropbox\Skolan\År 2\LP3\DV1416 3Dprogrammering 2\Project\DV1416_Grand_Final\Debug\DV1416_Grand_Final.exe" /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /ManifestFile:"Debug\DV1416_Grand_Final.exe.intermediate.manifest" /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /DEBUG /PDB:"F:\Dropbox\My Dropbox\Skolan\År 2\LP3\DV1416 3Dprogrammering 2\Project\DV1416_Grand_Final\Debug\DV1416_Grand_Final.pdb" /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"F:\Dropbox\My Dropbox\Skolan\År 2\LP3\DV1416 3Dprogrammering 2\Project\DV1416_Grand_Final\Debug\DV1416_Grand_Final.lib" /MACHINE:X86 Debug\main.obj
-         DV1416_Grand_Final.vcxproj -> F:\Dropbox\My Dropbox\Skolan\År 2\LP3\DV1416 3Dprogrammering 2\Project\DV1416_Grand_Final\Debug\DV1416_Grand_Final.exe
+         C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"D:\Dropbox\Skolan\Year 2\LP3\DV1416 3Dprogrammering 2\Project\DV1416_Grand_Final\Debug\DV1416_Grand_Final.exe" /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /ManifestFile:"Debug\DV1416_Grand_Final.exe.intermediate.manifest" /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /DEBUG /PDB:"D:\Dropbox\Skolan\Year 2\LP3\DV1416 3Dprogrammering 2\Project\DV1416_Grand_Final\Debug\DV1416_Grand_Final.pdb" /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"D:\Dropbox\Skolan\Year 2\LP3\DV1416 3Dprogrammering 2\Project\DV1416_Grand_Final\Debug\DV1416_Grand_Final.lib" /MACHINE:X86 Debug\main.obj
+         LINK : D:\Dropbox\Skolan\Year 2\LP3\DV1416 3Dprogrammering 2\Project\DV1416_Grand_Final\Debug\DV1416_Grand_Final.exe not found or not built by the last incremental link; performing full link
+         DV1416_Grand_Final.vcxproj -> D:\Dropbox\Skolan\Year 2\LP3\DV1416 3Dprogrammering 2\Project\DV1416_Grand_Final\Debug\DV1416_Grand_Final.exe
        Manifest:
-         C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\bin\mt.exe /nologo /verbose /outputresource:"F:\Dropbox\My Dropbox\Skolan\År 2\LP3\DV1416 3Dprogrammering 2\Project\DV1416_Grand_Final\Debug\DV1416_Grand_Final.exe;#1" /manifest Debug\DV1416_Grand_Final.exe.intermediate.manifest
+         C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\bin\mt.exe /nologo /verbose /outputresource:"D:\Dropbox\Skolan\Year 2\LP3\DV1416 3Dprogrammering 2\Project\DV1416_Grand_Final\Debug\DV1416_Grand_Final.exe;#1" /manifest Debug\DV1416_Grand_Final.exe.intermediate.manifest
        FinalizeBuildStatus:
          Deleting file "Debug\DV1416_Grand_Final.unsuccessfulbuild".
          Touching "Debug\DV1416_Grand_Final.lastbuildstate".
-     1>Done Building Project "F:\Dropbox\My Dropbox\Skolan\År 2\LP3\DV1416 3Dprogrammering 2\Project\DV1416_Grand_Final\DV1416_Grand_Final\DV1416_Grand_Final.vcxproj" (build target(s)).
+     1>Done Building Project "D:\Dropbox\Skolan\Year 2\LP3\DV1416 3Dprogrammering 2\Project\DV1416_Grand_Final\DV1416_Grand_Final\DV1416_Grand_Final.vcxproj" (build target(s)).
 
 Build succeeded.
 
-Time Elapsed 00:00:06.35
+Time Elapsed 00:00:04.00

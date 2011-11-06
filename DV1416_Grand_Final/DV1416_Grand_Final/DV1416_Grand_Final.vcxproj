@@ -13,6 +13,16 @@
   <ItemGroup>
     <ClCompile Include="Source\main.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="FX\effect.fx" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{991266F6-59B1-403E-AFD3-DA32988E864C}</ProjectGuid>
     <RootNamespace>DV1416_Grand_Final</RootNamespace>
@@ -49,6 +59,7 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
