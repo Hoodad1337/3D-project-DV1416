@@ -22,6 +22,7 @@ ID3D10Effect* pEffect;    // global definition
 ID3D10EffectTechnique* pTechnique;    // global definition
 ID3D10EffectPass* pPass;
 ID3D10InputLayout* pVertexLayout;
+ID3D10EffectMatrixVariable* pTransform;    // global
 
 D3D10_PASS_DESC PassDesc;
 
@@ -183,10 +184,54 @@ void initD3D(HWND hWnd)
 
 	device->RSSetViewports(1, &viewport);    // set the viewport
 }
+D3DXMATRIX& setupMatrices(void)
+{
+	D3DXMATRIX matTranslate;    // a matrix to store the translation information
+	D3DXMATRIX matRotateX;
+	D3DXMATRIX matScale;
+	D3DXMATRIX matWorld;
+	D3DXMATRIX matView;
+	D3DXMATRIX matProjection;
+	D3DXMATRIX matFinal;
+	D3DXMATRIX matRotateY;
 
+	static float dT = 0; dT += 0.001f;
+	D3DXMatrixRotationY(&matRotateY,D3DXToRadian(180));
+
+	// build a matrix to move the model 12 units along the x-axis and 4 units along the y-axis
+	// store it to matTranslate
+	//D3DXMatrixTranslation(&matTranslate, 12.0f, 4.0f, 0.0f);
+
+	//Rotate around the x-angle by the amount of radians 3.14 (1 pi)
+	D3DXMatrixRotationX(&matRotateX, D3DXToRadian(90));
+
+	D3DXMatrixScaling(&matScale, 1.0f, 1.0f, 1.0f);
+
+
+	matWorld = matScale * matRotateY;    // multiply matScale and matRotateX  to combine them
+	
+	static D3DXVECTOR3 pos = D3DXVECTOR3(0.0f,0.0f,0.0f); pos.z += 0.01f;
+
+	D3DXMatrixLookAtLH(&matView,
+		&pos,    // the camera position
+		&D3DXVECTOR3(0.0f, 0.0f, 0.0f),    // the look-at position
+		&D3DXVECTOR3(0.0f, 1.0f, 0.0f));    // the up direction
+
+	D3DXMatrixPerspectiveFovLH(&matProjection,
+		D3DXToRadian(45),    // the horizontal field of view
+		(FLOAT)SCREEN_WIDTH / (FLOAT)SCREEN_HEIGHT,    // aspect ratio
+		1.0f,    // the near view-plane
+		200.0f);    // the far view-plane
+
+	matFinal = matWorld * matView * matProjection;
+
+	return matFinal;
+}
 // this is the function used to render a single frame
 void render_frame(void)
 {
+	pTransform->SetMatrix(&setupMatrices()._11);
+
 	// clear the window to a deep blue
 	device->ClearRenderTargetView(rtv, D3DXCOLOR(0.0f, 0.2f, 0.4f, 1.0f));
 
@@ -260,6 +305,9 @@ void init_pipeline(void)
 	pPass = pTechnique->GetPassByIndex(0);
 	pPass->GetDesc(&PassDesc);
 
+	// get the TimeElapsed effect variable
+	pTransform = pEffect->GetVariableByName("Transform")->AsMatrix();
+
 	// create the input element descriptions
 	D3D10_INPUT_ELEMENT_DESC Layout[] =
 	{
@@ -274,10 +322,10 @@ void init_pipeline(void)
 
 	// use the input element descriptions to create the input layout
 	device->CreateInputLayout(Layout,
-		2,
-		PassDesc.pIAInputSignature,
-		PassDesc.IAInputSignatureSize,
-		&pVertexLayout);
+								2,
+								PassDesc.pIAInputSignature,
+								PassDesc.IAInputSignatureSize,
+								&pVertexLayout);
 }
 // this is the function that cleans up Direct3D and COM
 void cleanD3D(void)

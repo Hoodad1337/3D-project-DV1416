@@ -1,28 +1,36 @@
-struct DATA
+float4x4 Transform;
+
+// a struct for the vertex shader return value
+struct VSOut
 {
-    float4 Pos : SV_POSITION;
-    float4 Color : COLOR;
+	float4 Col : COLOR;    // vertex color
+	float4 Pos : SV_POSITION;    // vertex screen coordinates
 };
 
-DATA VS(float4 Pos : POSITION, float4 Col : COLOR)
+// the vertex shader
+VSOut VS(float4 Col : COLOR, float4 Pos : POSITION)
 {
-    DATA Data;
-    Data.Pos = Pos;
-    Data.Color = Col;
-    return Data;
+	VSOut Output;
+	Output.Pos = mul(Pos, Transform);    // set the vertex position to the input's position
+	Output.Col = Col;	 // set the vertex color
+
+	return Output;    // send the modified vertex data to the Rasterizer Stage
 }
 
-float4 PS(DATA Data) : SV_TARGET
+// the pixel shader
+float4 PS(float4 Col : COLOR) : SV_TARGET
 {
-    return Data.Color;
+	return Col;    // set the pixel color to the color passed in by the Rasterizer Stage
 }
 
-technique10 T0
+// the primary technique
+technique10 Technique_0
 {
-    pass P0
-    {
-        SetVertexShader(CompileShader(vs_4_0, VS()));
-        SetGeometryShader(NULL);
-        SetPixelShader(CompileShader(ps_4_0, PS()));
-    }
+	// the primary pass
+	pass Pass_0
+	{
+		SetVertexShader(CompileShader(vs_4_0, VS()));
+		SetGeometryShader(NULL);
+		SetPixelShader(CompileShader(ps_4_0, PS()));
+	}
 }
