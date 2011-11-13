@@ -3,64 +3,52 @@
 #include <windowsx.h>
 #include <d3d10.h>
 #include <d3dx10.h>
-#include "wtypes.h" //this is used to obtain screen resolution
 
 // include the Direct3D Library file
 #pragma comment (lib, "d3d10.lib")
 #pragma comment (lib, "d3dx10.lib")
 
 // define the screen resolution
-int SCREEN_WIDTH;
-int SCREEN_HEIGHT;
+#define SCREEN_WIDTH  800
+#define SCREEN_HEIGHT 600
 
 // global declarations
-ID3D10Device* device;    // the pointer to our Direct3D device interface
-ID3D10RenderTargetView* rtv;    // the pointer to the render target view
+ID3D10Device* device;
+
+ID3D10RenderTargetView* rtv;
+ID3D10RenderTargetView* rtv2;
+
+ID3D10RenderTargetView* rtvArray[2] = {rtv,rtv2};    // the pointer to the render target view
+
+ID3D10DepthStencilView* dsv;    // the pointer to the depth stencil view
 IDXGISwapChain* swapchain;    // the pointer to the swap chain class
-ID3D10Buffer* pBuffer;		// global definition
-ID3D10Effect* pEffect;    // global definition
-ID3D10EffectTechnique* pTechnique;    // global definition
+ID3D10Buffer* pBuffer;
+ID3D10Effect* pEffect;
+ID3D10EffectTechnique* pTechnique;
 ID3D10EffectPass* pPass;
 ID3D10InputLayout* pVertexLayout;
-ID3D10EffectMatrixVariable* pTransform;    // global
-
+ID3D10EffectMatrixVariable* pTransform;    // the pointer to the effect variable interface
 D3D10_PASS_DESC PassDesc;
 
-struct VERTEX
-{
-	D3DXVECTOR3 Position;
-	D3DXCOLOR Color;
-};
+struct VERTEX {D3DXVECTOR3 Position; D3DXCOLOR Color;};
 
 // function prototypes
-void initD3D(HWND hWnd);    // sets up and initializes Direct3D
-void render_frame(void);    // renders a single frame
-void cleanD3D(void);    // closes Direct3D and releases memory
-bool setScreenResolution(void); // gets the desktop resolution
-void init_geometry(void); //sets the geometry
-void init_pipeline(void); //Sets the pipeline 
+void initD3D(HWND hWnd);
+void render_frame(void);
+void cleanD3D(void);
+void init_geometry(void);
+void init_pipeline(void);
 
 // the WindowProc function prototype
 LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 
 
-/*! Set the screen resolution which will be used throughout the game.
-   * \return Returns a confirmed dynamic set resolution (true) or a pre-set static resolution (false) */
-
-
-	
 // the entry point for any Windows program
 int WINAPI WinMain(HINSTANCE hInstance,
 	HINSTANCE hPrevInstance,
 	LPSTR lpCmdLine,
 	int nCmdShow)
 {
-	if (!setScreenResolution())
-	{
-		SCREEN_HEIGHT = 800;
-		SCREEN_WIDTH = 600;
-	}
-
 	HWND hWnd;
 	WNDCLASSEX wc;
 
@@ -71,16 +59,15 @@ int WINAPI WinMain(HINSTANCE hInstance,
 	wc.lpfnWndProc = WindowProc;
 	wc.hInstance = hInstance;
 	wc.hCursor = LoadCursor(NULL, IDC_ARROW);
-	//wc.hbrBackground = (HBRUSH)COLOR_WINDOW;
 	wc.lpszClassName = "WindowClass";
 
 	RegisterClassEx(&wc);
 
 	hWnd = CreateWindowEx(NULL,
 		"WindowClass",
-		"Our First Direct3D Program",
+		"Our Direct3D Program",
 		WS_OVERLAPPEDWINDOW,
-		300, 300,
+		0, 0,
 		SCREEN_WIDTH, SCREEN_HEIGHT,
 		NULL,
 		NULL,
@@ -138,19 +125,19 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
 // this function initializes and prepares Direct3D for use
 void initD3D(HWND hWnd)
 {
-	DXGI_SWAP_CHAIN_DESC scd;    // create a struct to hold various swap chain information
+	DXGI_SWAP_CHAIN_DESC scd;
 
-	ZeroMemory(&scd, sizeof(DXGI_SWAP_CHAIN_DESC));    // clear out the struct for use
+	ZeroMemory(&scd, sizeof(DXGI_SWAP_CHAIN_DESC));
 
-	scd.BufferCount = 1;    // create two buffers, one for the front, one for the back
-	scd.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;    // use 32-bit color
-	scd.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;    // tell how the chain is to be used
+	scd.BufferCount = 1;
+	scd.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
 	scd.BufferDesc.Width = SCREEN_WIDTH;
 	scd.BufferDesc.Height = SCREEN_HEIGHT;
-	scd.OutputWindow = hWnd;    // set the window to be used by Direct3D
-	scd.SampleDesc.Count = 1;    // set the level of multi-sampling
-	scd.SampleDesc.Quality = 0;    // set the quality of multi-sampling
-	scd.Windowed = FALSE;    // set to windowed or full-screen mode
+	scd.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
+	scd.OutputWindow = hWnd;
+	scd.SampleDesc.Count = 1;
+	scd.SampleDesc.Quality = 0;
+	scd.Windowed = TRUE;
 	scd.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
 
 	// create a device class and swap chain class using the information in the scd struct
@@ -164,14 +151,40 @@ void initD3D(HWND hWnd)
 		&device);
 
 
+	// create a texture for the depth buffer
+	D3D10_TEXTURE2D_DESC zbd;
+	ZeroMemory(&zbd, sizeof(zbd));
+	zbd.Width = SCREEN_WIDTH;    // set the width of the depth buffer
+	zbd.Height = SCREEN_HEIGHT;    // set the height of the depth buffer
+	zbd.ArraySize = 1;    // we are only creating one texture
+	zbd.SampleDesc.Count = 1;    // no multi-sampling
+	zbd.Format = DXGI_FORMAT_D32_FLOAT;    // one 32-bit float per pixel
+	zbd.BindFlags = D3D10_BIND_DEPTH_STENCIL;    // texture is to be used as a depth buffer
+	ID3D10Texture2D* pDepthBuffer;
+	device->CreateTexture2D(&zbd, NULL, &pDepthBuffer);    // create the texture
+
+	// create the depth buffer
+	D3D10_DEPTH_STENCIL_VIEW_DESC dsvd;
+	ZeroMemory(&dsvd, sizeof(dsvd));
+	dsvd.Format = DXGI_FORMAT_D32_FLOAT;    // one 32-bit float per pixel
+	dsvd.ViewDimension = D3D10_DSV_DIMENSION_TEXTURE2D;    // depth buffer is a 2D texture
+	device->CreateDepthStencilView(pDepthBuffer, &dsvd, &dsv);    // create the depth buffer
+	pDepthBuffer->Release();    // release the texture once the depth buffer is made
+
 	// get the address of the back buffer and use it to create the render target
 	ID3D10Texture2D* pBackBuffer;
+	ID3D10Texture2D* pBlackBuffer;
+
 	swapchain->GetBuffer(0, __uuidof(ID3D10Texture2D), (LPVOID*)&pBackBuffer);
+	swapchain->GetBuffer(0, __uuidof(ID3D10Texture2D), (LPVOID*)&pBlackBuffer);
 	device->CreateRenderTargetView(pBackBuffer, NULL, &rtv);
+	device->CreateRenderTargetView(pBlackBuffer,NULL, &rtv2);
 	pBackBuffer->Release();
+	pBlackBuffer->Release();
 
 	// set the back buffer as the render target
-	device->OMSetRenderTargets(1, &rtv, NULL);
+	device->OMSetRenderTargets(2, rtvArray, dsv);
+
 
 	D3D10_VIEWPORT viewport;    // create a struct to hold the viewport data
 
@@ -181,60 +194,23 @@ void initD3D(HWND hWnd)
 	viewport.TopLeftY = 0;    // set the top to 0
 	viewport.Width = SCREEN_WIDTH;    // set the width to the window's width
 	viewport.Height = SCREEN_HEIGHT;    // set the height to the window's height
+	viewport.MinDepth = 0;    // the closest an object can be on the depth buffer is 0.0
+	viewport.MaxDepth = 1;    // the farthest an object can be on the depth buffer is 1.0
 
 	device->RSSetViewports(1, &viewport);    // set the viewport
 }
-D3DXMATRIX& setupMatrices(void)
-{
-	D3DXMATRIX matTranslate;    // a matrix to store the translation information
-	D3DXMATRIX matRotateX;
-	D3DXMATRIX matScale;
-	D3DXMATRIX matWorld;
-	D3DXMATRIX matView;
-	D3DXMATRIX matProjection;
-	D3DXMATRIX matFinal;
-	D3DXMATRIX matRotateY;
-
-	static float dT = 0; dT += 0.001f;
-	D3DXMatrixRotationY(&matRotateY,D3DXToRadian(180));
-
-	// build a matrix to move the model 12 units along the x-axis and 4 units along the y-axis
-	// store it to matTranslate
-	//D3DXMatrixTranslation(&matTranslate, 12.0f, 4.0f, 0.0f);
-
-	//Rotate around the x-angle by the amount of radians 3.14 (1 pi)
-	D3DXMatrixRotationX(&matRotateX, D3DXToRadian(90));
-
-	D3DXMatrixScaling(&matScale, 1.0f, 1.0f, 1.0f);
 
 
-	matWorld = matScale * matRotateY;    // multiply matScale and matRotateX  to combine them
-	
-	static D3DXVECTOR3 pos = D3DXVECTOR3(0.0f,0.0f,0.0f); pos.z += 0.01f;
-
-	D3DXMatrixLookAtLH(&matView,
-		&pos,    // the camera position
-		&D3DXVECTOR3(0.0f, 0.0f, 0.0f),    // the look-at position
-		&D3DXVECTOR3(0.0f, 1.0f, 0.0f));    // the up direction
-
-	D3DXMatrixPerspectiveFovLH(&matProjection,
-		D3DXToRadian(45),    // the horizontal field of view
-		(FLOAT)SCREEN_WIDTH / (FLOAT)SCREEN_HEIGHT,    // aspect ratio
-		1.0f,    // the near view-plane
-		200.0f);    // the far view-plane
-
-	matFinal = matWorld * matView * matProjection;
-
-	return matFinal;
-}
 // this is the function used to render a single frame
 void render_frame(void)
 {
-	pTransform->SetMatrix(&setupMatrices()._11);
+	// clear the window to a deep blue and clear the depth buffer to 1.0f
+	//device->ClearRenderTargetView(rtv, D3DXCOLOR(0.0f, 0.2f, 0.4f, 1.0f));
+	device->ClearRenderTargetView(rtv2,D3DXCOLOR(0.0f, 0.0f, 0.0f, 1.0f));
+	device->ClearDepthStencilView(dsv, D3D10_CLEAR_DEPTH, 1.0f, 0);
 
-	// clear the window to a deep blue
-	device->ClearRenderTargetView(rtv, D3DXCOLOR(0.0f, 0.2f, 0.4f, 1.0f));
-
+	device->OMSetRenderTargets(1,&rtv,NULL);
+	
 	// select which input layout we are using
 	device->IASetInputLayout(pVertexLayout);
 
@@ -246,26 +222,92 @@ void render_frame(void)
 	UINT offset = 0;
 	device->IASetVertexBuffers(0, 1, &pBuffer, &stride, &offset);
 
-	// apply the appropriate pass
-	pPass->Apply(0);
+	// increase the time varaible and send to the effect
+	static float Time = 0.0f; Time += 16.0f/1000.0f;
 
-	// draw the vertex buffer to the back buffer
+	D3DXMATRIX matRotate, matView, matProjection, matFinal;
+
+	// create a rotation matrix
+	D3DXMatrixRotationY(&matRotate, Time);
+
+	// create a view matrix
+	D3DXMatrixLookAtLH(&matView,
+		&D3DXVECTOR3(0.0f, 0.0f, 2.0f),    // the camera position
+		&D3DXVECTOR3(0.0f, 0.0f, 0.0f),    // the look-at position
+		&D3DXVECTOR3(0.0f, 1.0f, 0.0f));    // the up direction
+
+	// create a projection matrix
+	D3DXMatrixPerspectiveFovLH(&matProjection,
+		(float)D3DXToRadian(45),    // the horizontal field of view
+		(FLOAT)SCREEN_WIDTH / (FLOAT)SCREEN_HEIGHT, // aspect ratio
+		1.0f,    // the near view-plane
+		100.0f);    // the far view-plane
+
+	// combine the matrices and render
+	matFinal = matRotate * matView * matProjection;
+	pTransform->SetMatrix(&matFinal._11); 
+	pPass->Apply(0);
+	device->Draw(3, 0);
+
+	//-----------------------------------------------------------------------------------
+
+	device->OMSetRenderTargets(1,&rtv2,NULL);
+
+	// select which input layout we are using
+	device->IASetInputLayout(pVertexLayout);
+
+	// select which primtive type we are using
+	device->IASetPrimitiveTopology(D3D10_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+	// select which vertex buffer to display
+	stride = sizeof(VERTEX);
+	offset = 0;
+	device->IASetVertexBuffers(0, 1, &pBuffer, &stride, &offset);
+
+	D3DXMATRIX matRotate2, matView2, matProjection2, matFinal2;
+
+	// create a rotation matrix
+	D3DXMatrixRotationY(&matRotate2, -Time);
+
+	// create a view matrix
+	D3DXMatrixLookAtLH(&matView2,
+		&D3DXVECTOR3(0.0f, 0.0f, 2.0f),    // the camera position
+		&D3DXVECTOR3(0.0f, 0.0f, 0.0f),    // the look-at position
+		&D3DXVECTOR3(0.0f, 1.0f, 0.0f));    // the up direction
+
+	// create a projection matrix
+	D3DXMatrixPerspectiveFovLH(&matProjection2,
+		(float)D3DXToRadian(45),    // the horizontal field of view
+		(FLOAT)SCREEN_WIDTH / (FLOAT)SCREEN_HEIGHT, // aspect ratio
+		1.0f,    // the near view-plane
+		100.0f);    // the far view-plane
+
+	// combine the matrices and render
+	matFinal2 = matRotate2 * matView2 * matProjection2;
+	pTransform->SetMatrix(&matFinal2._11); 
+	pPass->Apply(0);
 	device->Draw(3, 0);
 
 	// display the rendered frame
-	swapchain->Present(0, 0);
+	swapchain->Present(1, 0);
 }
 
-bool setScreenResolution()
+
+// this is the function that cleans up Direct3D and COM
+void cleanD3D(void)
 {
-	RECT desktop; // Get a handle to the desktop window
-	const HWND hDesktop = GetDesktopWindow(); //Get the size of screen to the variable desktop
-	GetWindowRect(hDesktop, &desktop);
-	SCREEN_WIDTH = desktop.right;
-	SCREEN_HEIGHT = desktop.bottom;
+	swapchain->SetFullscreenState(FALSE, NULL);    // switch to windowed mode
 
-	return true;
+	pBuffer->Release();    // close and release the vertex buffer
+	pVertexLayout->Release();    // close and release the input layout object
+	swapchain->Release();    // close and release the swap chain
+	rtv->Release();    // close and release the render target view
+	rtv2->Release();
+	device->Release();    // close and release the 3D device
 }
+
+
+// this is the function that creates the geometry to render
 void init_geometry(void)
 {
 	// create three vertices using the VERTEX struct built earlier
@@ -292,6 +334,9 @@ void init_geometry(void)
 	memcpy(pVoid, OurVertices, sizeof(OurVertices));    // copy the vertices to the buffer
 	pBuffer->Unmap();
 }
+
+
+// this function sets up the pipeline for rendering
 void init_pipeline(void)
 {
 	// load the effect file
@@ -322,19 +367,8 @@ void init_pipeline(void)
 
 	// use the input element descriptions to create the input layout
 	device->CreateInputLayout(Layout,
-								2,
-								PassDesc.pIAInputSignature,
-								PassDesc.IAInputSignatureSize,
-								&pVertexLayout);
-}
-// this is the function that cleans up Direct3D and COM
-void cleanD3D(void)
-{
-	swapchain->SetFullscreenState(FALSE, NULL);
-
-	pBuffer->Release();
-	pVertexLayout->Release();
-	swapchain->Release();    // close and release the swap chain
-	rtv->Release();    // close and release the render target view
-	device->Release();    // close and release the 3D device
+		2,
+		PassDesc.pIAInputSignature,
+		PassDesc.IAInputSignatureSize,
+		&pVertexLayout);
 }

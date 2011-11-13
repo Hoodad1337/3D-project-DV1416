@@ -1,14 +1,11 @@
-﻿Build started 2011-11-13 10:37:24.
+﻿Build started 2011-11-13 12:37:41.
      1>Project "D:\Dropbox\Skolan\Year 2\LP3\DV1416 3Dprogrammering 2\Project\DV1416_Grand_Final\DV1416_Grand_Final\DV1416_Grand_Final.vcxproj" on node 2 (build target(s)).
      1>InitializeBuildStatus:
          Creating "Debug\DV1416_Grand_Final.unsuccessfulbuild" because "AlwaysCreate" was specified.
        ClCompile:
          C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\CL.exe /c /Zi /nologo /W3 /WX- /Od /Oy- /D _MBCS /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc100.pdb" /Gd /TP /analyze- /errorReport:prompt Source\main.cpp
          main.cpp
-     1>Source\main.cpp(199): warning C4305: 'argument' : truncation from 'double' to 'FLOAT'
-     1>Source\main.cpp(206): warning C4305: 'argument' : truncation from 'double' to 'FLOAT'
-     1>Source\main.cpp(224): warning C4305: 'argument' : truncation from 'double' to 'FLOAT'
-     1>Source\main.cpp(228): warning C4172: returning address of local variable or temporary
+     1>cl : Command line warning D9028: minimal rebuild failure, reverting to normal build
        Link:
          C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"D:\Dropbox\Skolan\Year 2\LP3\DV1416 3Dprogrammering 2\Project\DV1416_Grand_Final\Debug\DV1416_Grand_Final.exe" /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /ManifestFile:"Debug\DV1416_Grand_Final.exe.intermediate.manifest" /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /DEBUG /PDB:"D:\Dropbox\Skolan\Year 2\LP3\DV1416 3Dprogrammering 2\Project\DV1416_Grand_Final\Debug\DV1416_Grand_Final.pdb" /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"D:\Dropbox\Skolan\Year 2\LP3\DV1416 3Dprogrammering 2\Project\DV1416_Grand_Final\Debug\DV1416_Grand_Final.lib" /MACHINE:X86 Debug\main.obj
          LINK : D:\Dropbox\Skolan\Year 2\LP3\DV1416 3Dprogrammering 2\Project\DV1416_Grand_Final\Debug\DV1416_Grand_Final.exe not found or not built by the last incremental link; performing full link
@@ -22,4 +19,4 @@
 
 Build succeeded.
 
-Time Elapsed 00:00:01.75
+Time Elapsed 00:00:02.58
